@@ -8,4 +8,5 @@
   :serial t
   :depends-on (#:sdl2 #:cffi)
   :components ((:file "package")
-               (:file "cl-trample")))
+               (:file "cl-trample")
+	       (:file "entity")))
