@@ -72,9 +72,18 @@
 (defun update-pixels ()
   (declare (optimize (speed 3) (safety 0)))
   (declare (type (simple-array integer) *pixels*))
-  (clear-pixels)
+  (declare (type integer i))
+  (declare (type system-area-pointer tex-ptr))
+  
 
-  (dolist (entity *entities*)
+  (let ((tex-ptr (sdl2:lock-texture *texture*))
+	(count (* *width* *height*)))
+    ;; clear texture
+    (dotimes (i count)
+      (setf (cffi:mem-aref tex-ptr :unsigned-int i) *bg-clear*))
+
+    ;; copy entity textures onto texture
+    (dolist (entity *entities*)
       (let* ((x (pos-x entity))
 	     (y (pos-y entity))
 	     (texture (texture entity))
@@ -84,7 +93,7 @@
 	     (count (* width height)))
 	(dotimes (j count)
 	  (destructuring-bind (p-x p-y) (wrap-pos (+ x x-offset) y *width* *height*)
-	    (setf (aref *pixels* (coord->index p-x p-y *width*))
+	    (setf (cffi:mem-aref tex-ptr :unsigned-int (coord->index p-x p-y *width*))
 		  (aref texture j))
 	    )
 	  (setf x-offset (1+ x-offset))
@@ -93,6 +102,8 @@
 	    (setf y (1+ y)))
 	  )
 	)))
+  (sdl2:unlock-texture *texture*)
+  )
 		 
 
 (defun render (renderer)
@@ -102,24 +113,25 @@
   (update-pixels)
   (sdl2:render-clear renderer)
   
-  (let ((tex-ptr (sdl2:lock-texture *texture*))
-	(count (* *width* *height*)))
-    (dotimes (i count)
-      (setf (cffi:mem-aref tex-ptr :unsigned-int i)
-	    (aref *pixels* i))
-	 ))
-  (sdl2:unlock-texture *texture*)
+  ;; (let ((tex-ptr (sdl2:lock-texture *texture*))
+  ;; 	(count (* *width* *height*)))
+  ;;   (dotimes (i count)
+  ;;     (setf (cffi:mem-aref tex-ptr :unsigned-int i)
+  ;; 	    (aref *pixels* i))
+  ;; 	 ))
+  ;; (sdl2:unlock-texture *texture*)
   (sdl2:render-copy renderer *texture*))
 
 
-(defparameter *height* 600)
-(defparameter *width* 800)
+(defparameter *height* 1000)
+(defparameter *width* 1800)
 (defparameter *pixels* (make-array (* *height* *width*) :element-type 'integer :initial-element 0))
 (defparameter *texture* nil)
 (defparameter *window-surface* nil)
 (defparameter *window-format* nil)
 (defparameter *fps-timer* nil)
 (defparameter *counted-frames* 0)
+(defparameter *bg-clear* nil)
 (defparameter *entities* '())
 
 (defun fps ()
@@ -132,6 +144,7 @@
     (sdl2:with-window (win :title "Let's make it happen!" :w *width* :h *height* :flags '(:shown))
       (setf *window-surface* (sdl2:get-window-surface win))
       (setf *window-format* (sdl2:surface-format *window-surface*))
+      (setf *bg-clear* (sdl2:map-rgb *window-format* 0 0 0))
       (print *window-format*)
       (sdl2:with-renderer (renderer win :flags '(:accelerated))
 	(setf *texture* (sdl2:create-texture renderer sdl2:+pixelformat-rgb888+ 1 *width* *height*))
