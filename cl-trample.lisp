@@ -32,7 +32,7 @@
 
 
 (defun initialize-entities ()
-  (dotimes (n 500)
+  (dotimes (n 1000)
     (let ((e (make-instance 'entity
   			    :x (random *width*)
   			    :y (random *height*)
@@ -41,6 +41,7 @@
   			    :w 10
   			    :h 10)))
       (setf (texture e) (get-texture "foo"))
+      (setf (dest-rect e) (sdl2:make-rect 0 0 0 0))
       (setf *entities* (cons e *entities*))
       ))
   )
@@ -69,15 +70,20 @@
     (let* ((x (pos-x entity))
 	   (y (pos-y entity))
 	   (src-rect (texture entity))
-	   (dest-rect (sdl2:make-rect x y (width entity) (height entity))))
+	   (dest-rect (dest-rect entity)))
+      (setf (sdl2:rect-x dest-rect) x)
+      (setf (sdl2:rect-y dest-rect) y)
+      (setf (sdl2:rect-width dest-rect) (width entity))
+      (setf (sdl2:rect-height dest-rect) (height entity))
+      
       (sdl2:render-copy *renderer* *texture-atlas-texture* :source-rect src-rect :dest-rect dest-rect)
       )))
 
 
 
 
-(defparameter *height* 600)
-(defparameter *width* 800)
+(defparameter *height* 1000)
+(defparameter *width* 1800)
 (defparameter *renderer* nil)
 (defparameter *window-surface* nil)
 (defparameter *window-format* nil)

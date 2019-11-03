@@ -7,4 +7,6 @@
    (vel-y :initarg :vel-y :initform 0 :accessor vel-y)
    (height :initarg :h :initform 1 :accessor height)
    (width :initarg :w :initform 1  :accessor width)
-   (texture :initarg :texture :initform nil :accessor texture)))
+   (texture :initarg :texture :initform nil :accessor texture)
+   (dest-rect :initform nil :accessor dest-rect)
+   ))
