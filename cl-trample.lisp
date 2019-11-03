@@ -5,29 +5,18 @@
 ;;(setf red-color (sdl2:map-rgb *window-format* 255 0 0))
 ;;(setf green-color (sdl2:map-rgb *window-format* 0 255 0))
 
-(defun either (option1 option2)
-  (if (= 0 (random 2))
-      (funcall option1)
-      (funcall option2)))
-
 
 (defun update ()
   (dolist (e *entities*)
-    (setf (width e) (either (lambda () (+ 1 (width e)))
-			    (lambda () (+ -1 (width e)))
+    (setf (width e) (either (+ 1 (width e))
+			    (+ -1 (width e))
 			    ))
-    (setf (height e) (either (lambda () (+ 1 (height e)))
-			    (lambda () (+ -1 (height e)))
+    (setf (height e) (either (+ 1 (height e))
+			     (+ -1 (height e))
 			    ))
     (setf (angle e) (+ (random 6.34) (angle e)))
-    (setf (pos-x e) (floor (+ (pos-x e) (vel-x e))))
-    (setf (pos-y e) (floor (+ (pos-y e) (vel-y e))))
-    (cond
-      ((< (pos-x e) 0) (setf (pos-x e) (+ (pos-x e) *width*)))
-      ((>= (pos-x e) *width*) (setf (pos-x e) (- (pos-x e) *width*))))
-    (cond
-      ((< (pos-y e) 0) (setf (pos-y e) (+ (pos-y e) *height*)))
-      ((>= (pos-y e) *height*) (setf (pos-y e) (- (pos-y e) *height*))))
+    (setf (pos-x e) (wrap-value (floor (+ (pos-x e) (vel-x e))) 0 *width*))
+    (setf (pos-y e) (wrap-value (floor (+ (pos-y e) (vel-y e))) 0 *height*))
     ))
 
 
@@ -42,30 +31,13 @@
   			    :w 10
   			    :h 10)))
       (setf (sprite e) (either
-			(lambda () (get-sprite "ball"))
-			(lambda () (get-sprite "green"))
+			(get-sprite "red")
+			(get-sprite "green")
 			))
       (setf (dest-rect (sprite e)) (sdl2:make-rect 0 0 0 0) )
       (setf *entities* (cons e *entities*))
       ))
   )
-
-(defun coord->index (x y width)
-  (declare (type integer x y width))
-  (+ x (* y width)))
-
-(defun index->coord (i width)
-  (values (mod i width) (floor i width)))
-
-(defun wrap-pos (x y width height)
-  (list (cond
-	    ((< x 0) (+ width x))
-	    ((>= x width) (- x width))
-	    (t x))
-	  (cond
-	    ((< y 0) (+ height y))
-	    ((>= y height) (- y height))
-	    (t y))))
 
 (defun render ()
   (sdl2:render-clear *renderer*)

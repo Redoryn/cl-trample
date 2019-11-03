@@ -8,6 +8,7 @@
   :serial t
   :depends-on (#:sdl2 #:cffi #:alexandria)
   :components ((:file "package")
+	       (:file "common")
                (:file "cl-trample")
 	       (:file "entity")
 	       (:file "texture-atlas")))
