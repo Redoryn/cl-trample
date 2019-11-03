@@ -13,7 +13,7 @@
 			    ))
     (setf (height e) (either (+ 1 (height e))
 			     (+ -1 (height e))
-			    ))
+			    ))d
     (setf (angle e) (+ (random 6.34) (angle e)))
     (setf (pos-x e) (wrap-value (floor (+ (pos-x e) (vel-x e))) 0 *width*))
     (setf (pos-y e) (wrap-value (floor (+ (pos-y e) (vel-y e))) 0 *height*))
@@ -32,7 +32,7 @@
   			    :h 10)))
       (setf (sprite e) (either
 			(get-sprite "red")
-			(get-sprite "green")
+			(get-sprite "ball")
 			))
       (setf (dest-rect (sprite e)) (sdl2:make-rect 0 0 0 0) )
       (setf *entities* (cons e *entities*))

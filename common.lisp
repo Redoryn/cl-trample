@@ -1,9 +1,9 @@
 (in-package #:cl-trample)
 
 (defmacro either (option1 option2)
-  (if (= 0 (random 2))
-      option1
-      option2))
+  `(if (= 0 (random 2))
+      ,option1
+      ,option2))
 
 (defun wrap-value (v min max)
   (cond
