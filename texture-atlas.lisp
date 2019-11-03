@@ -1,0 +1,20 @@
+(in-package #:cl-trample)
+
+(defparameter *texture-atlas-texture* nil)
+(defparameter *texture-atlas* nil)
+
+(defun texture-atlas ()
+  (let* ((width 10)
+	 (height 10)
+	 (x 0)
+	 (y 0)
+	 (r (sdl2:make-rect x y width height)))
+    (sdl2:set-render-target *renderer* *texture-atlas-texture*)
+    (sdl2:set-render-draw-color *renderer* 0 255 0 100)
+    (sdl2:render-fill-rect *renderer* r)
+    (sdl2:set-render-target *renderer* nil)
+    (setf *texture-atlas* (list r))
+    ))
+
+(defun get-texture (name)
+  (car *texture-atlas*))

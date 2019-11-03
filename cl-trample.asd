@@ -9,4 +9,5 @@
   :depends-on (#:sdl2 #:cffi)
   :components ((:file "package")
                (:file "cl-trample")
-	       (:file "entity")))
+	       (:file "entity")
+	       (:file "texture-atlas")))
