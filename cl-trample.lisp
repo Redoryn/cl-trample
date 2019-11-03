@@ -19,6 +19,7 @@
     (setf (height e) (either (lambda () (+ 1 (height e)))
 			    (lambda () (+ -1 (height e)))
 			    ))
+    (setf (angle e) (+ (random 6.34) (angle e)))
     (setf (pos-x e) (floor (+ (pos-x e) (vel-x e))))
     (setf (pos-y e) (floor (+ (pos-y e) (vel-y e))))
     (cond
@@ -40,8 +41,11 @@
   			    :vel-y (* 3 (- (random 2.0) 1))
   			    :w 10
   			    :h 10)))
-      (setf (texture e) (get-texture "foo"))
-      (setf (dest-rect e) (sdl2:make-rect 0 0 0 0))
+      (setf (sprite e) (either
+			(lambda () (get-sprite "ball"))
+			(lambda () (get-sprite "green"))
+			))
+      (setf (dest-rect (sprite e)) (sdl2:make-rect 0 0 0 0) )
       (setf *entities* (cons e *entities*))
       ))
   )
@@ -69,14 +73,15 @@
   (dolist (entity *entities*)
     (let* ((x (pos-x entity))
 	   (y (pos-y entity))
-	   (src-rect (texture entity))
-	   (dest-rect (dest-rect entity)))
+	   (texture (texture (sprite entity)))
+	   (src-rect (src-rect (sprite entity)))
+	   (dest-rect (dest-rect (sprite entity))))
       (setf (sdl2:rect-x dest-rect) x)
       (setf (sdl2:rect-y dest-rect) y)
       (setf (sdl2:rect-width dest-rect) (width entity))
       (setf (sdl2:rect-height dest-rect) (height entity))
       
-      (sdl2:render-copy *renderer* *texture-atlas-texture* :source-rect src-rect :dest-rect dest-rect)
+      (sdl2:render-copy-ex *renderer* texture :source-rect src-rect :dest-rect dest-rect :angle (angle entity))
       )))
 
 
@@ -105,8 +110,6 @@
       (setf *bg-clear* (sdl2:map-rgb *window-format* 0 0 0))
       (sdl2:with-renderer (renderer win :flags '(:accelerated))
 	(setf *renderer* renderer)
-        (setf *texture-atlas-texture* (sdl2:create-texture *renderer* sdl2:+pixelformat-rgb888+ 2 *width* *height*))
-	
 	(texture-atlas)	
 	(initialize-entities)
 

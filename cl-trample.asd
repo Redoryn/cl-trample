@@ -6,7 +6,7 @@
   :license  "Specify license here"
   :version "0.0.1"
   :serial t
-  :depends-on (#:sdl2 #:cffi)
+  :depends-on (#:sdl2 #:cffi #:alexandria)
   :components ((:file "package")
                (:file "cl-trample")
 	       (:file "entity")
