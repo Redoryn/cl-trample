@@ -8,7 +8,18 @@
    (height :initarg :h :initform 1 :accessor height)
    (width :initarg :w :initform 1  :accessor width)
    (sprite :initarg :sprite :initform nil :accessor sprite)
-   ;(dest-rect :initform nil :accessor dest-rect)
    (angle :initform 0.0 :accessor angle)
    ))
+
+(defun create-entity (x y sprite)
+  (let ((e (make-instance 'entity
+  			      :x x
+  			      :y y
+  			      :vel-x 0
+  			      :vel-y 0
+  			      :w 10
+  			      :h 10)))
+	(setf (sprite e) sprite)
+	e
+	))
 
