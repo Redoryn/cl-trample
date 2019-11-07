@@ -3,8 +3,8 @@
 (in-package #:cl-trample)
 
 
-(defparameter *height* 1000)
-(defparameter *width* 1800)
+(defparameter *height* 600)
+(defparameter *width* 800)
 (defparameter *renderer* nil)
 (defparameter *window-surface* nil)
 (defparameter *window-format* nil)
@@ -36,7 +36,7 @@
     (print avgFps)
     ))
 
-
+(defun on-mouse-click (x y xrel yrel state))
 
 (defun start (setup update draw)
   (initialize setup update draw))
@@ -56,13 +56,14 @@
 	     (:keysym keysym)
 	     (when (sdl2:scancode= (sdl2:scancode-value keysym) :scancode-escape)
 	       (sdl2:push-event :quit)))
+	    (:mousebuttondown (:x x :y y :state state) (on-mouse-click x y state))
 	    (:idle
 	     ()
 	     (funcall update-fn world)
 	     (funcall draw-fn world)
 	     (sdl2:render-present *renderer*)
 	     (setf *counted-frames* (1+ *counted-frames*))
-	     (fps)
+	     ;(fps)
 	     (sdl2:delay 16)
 	     )
 	    (:quit () t)))
