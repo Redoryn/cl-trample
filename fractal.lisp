@@ -112,6 +112,7 @@
   (declare (ignore world))
   )
 
-(start #'setup #'update #'draw)
+
+(start (make-scenario #'setup #'update #'draw))
 
 

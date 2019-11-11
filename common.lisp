@@ -12,6 +12,13 @@
     (t v))
   )
 
+(defun clamp (v min max)
+  (cond
+    ((< v min) min)
+    ((> v max) max)
+    (t v))
+  )
+
 (defun coord->index (x y width)
   (declare (type integer x y width))
   (+ x (* y width)))
