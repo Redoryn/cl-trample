@@ -32,9 +32,18 @@
 
 
 (defun fps ()
-  (let ((avgFps (/ *counted-frames* (/ (sdl2:get-ticks) 1000.0))))
-    (print avgFps)
-    ))
+  (let* ((avgFps (round (/ *counted-frames* (/ (sdl2:get-ticks) 1000.0))))
+	 (surface (sdl2-ttf:render-text-solid *font*
+					      (format nil "FPS: ~d " avgFps)
+					      0
+					      255
+					      0
+					      0))
+	 (texture (sdl2:create-texture-from-surface *renderer* surface))
+	 (dest-rect (sdl2:make-rect 10 10 (sdl2:texture-width texture) (sdl2:texture-height texture)))
+	 (sdl2:free-surface surface)
+	 )
+    (sdl2:render-copy *renderer* texture :dest-rect dest-rect)))
 
 (defun on-mouse-click (x y state world))
 (defun on-mouse-motion (x y xrel yrel state world))
@@ -55,11 +64,14 @@
     scenario))
 
 (defparameter *show-fps* nil)
+(defparameter *font* nil)
 
 (defmethod toggle-fps ()
   (setf *show-fps* (not *show-fps*)))
 
 (defun initialize (scenario)
+  (sdl2-ttf:init)
+  (setf *font* (sdl2-ttf:open-font "C:/users/Alex/Google Drive/Development/clisp/PROBE_10PX_OTF.otf" 10))
   (sdl2:with-init (:everything)
     (sdl2:with-window (win :title "Let's make it happen!" :w *width* :h *height* :flags '(:shown))
       (setf *window-surface* (sdl2:get-window-surface win))
@@ -81,10 +93,11 @@
 	     ()
 	     (funcall (on-update scenario) world)
 	     (funcall (on-draw scenario) world)
-	     (sdl2:render-present *renderer*)
+	     
 	     (setf *counted-frames* (1+ *counted-frames*))
 	     (when *show-fps*
 	       (fps))
+	     (sdl2:render-present *renderer*)
 	     (sdl2:delay 16)
 	     )
 	    (:quit () t)))
