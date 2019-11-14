@@ -87,6 +87,8 @@
 	       (sdl2:push-event :quit)))
 	    (:mousebuttondown (:x x :y y :state state)
 			      (on-mouse-click x y state world))
+	    (:mousebuttonup (:x x :y y :state state)
+			    (on-mouse-click x y state world))
 	    (:mousemotion (:x x :y y :xrel xrel :yrel yrel :state state)
 			  (on-mouse-motion x y xrel yrel state world))
 	    (:idle
