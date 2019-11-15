@@ -185,9 +185,27 @@
 
 
 
-(defun cls ()
-  (sdl2:set-render-draw-color *renderer* 0 0 0 255)
-  (sdl2:render-clear *renderer*))
+
+(defgeneric on-click (ui-element event)
+  (:documentation "Defines what happens when you click on an item"))
+
+(defgeneric on-mouse-exit (ui-element)
+  (:documentation "Defines what happends when the mouse leaves the area of the ui-element"))
+
+(defgeneric on-mouse-enter (ui-element)
+  (:documentation "Defines what happends when the mouse enters the area of the ui-element"))
+
+
+
+
+
+
+(defmethod on-mouse-enter ((b button)))
+
+(defmethod on-mouse-exit ((b button))
+  (when (pressedp b)
+    (setf (pressedp b) nil)))
+
 
 (defmethod on-click ((u ui-element) event))
 
@@ -215,6 +233,8 @@
   )
 
 
+(defgeneric paint (frame)
+  (:documentation "Draw the UI element to the renderer."))
 
 (defmethod paint ((f frame))
   (draw-border f)
@@ -266,6 +286,9 @@
     )
   )
 
+(defun cls ()
+  (sdl2:set-render-draw-color *renderer* 0 0 0 255)
+  (sdl2:render-clear *renderer*))
 
 
 
@@ -287,7 +310,13 @@
   (when *in-sliderp*
     (update-slider-on-mouse-pos x y any-slider)
     (setf (text any-label) (format nil "Value: ~a" (current-value any-slider)))
-    ))
+    )
+  (when (pressedp any-button)
+    (if (not (point-inside-element any-button x y))
+	(setf (pressedp any-button) nil)
+	)
+    )
+  )
 
 (defun setup ())
 
